@@ -31,12 +31,30 @@ class _BirthdayPageState extends State<BirthdayPage>{
   TextEditingController _dateControler = TextEditingController();
   String _resultado = "";
   void _calcular(String res){
+    res = res.trim();
     List<String> partes = res.split("/");
-    int dia = int.parse(partes[0]);
-    int mes = int.parse(partes[1]);
-    int ano = int.parse(partes[2]);
+    if(partes.length !=3){
+      setState(() {
+        _resultado = "Você digitou algo de errado";
+      });
+      
+    }else{
+    int? dia = int.tryParse(partes[0]);
+    int? mes = int.tryParse(partes[1]);
+    int? ano = int.tryParse(partes[2]);
+    if(dia == null || mes == null || ano == null){
+      setState(() {
+      _resultado = "Você digitou errado";
+      });
+    }
+    else{
     DateTime hoje = DateTime.now();
-    DateTime nascimento = DateTime(ano,mes,dia);
+    DateTime nascimento = DateTime(ano!,mes!,dia!);
+    if(nascimento.isAfter(hoje)){
+      setState(() {
+        _resultado = "A data é posterio a dia de hoje";
+      });
+    }else{
     int idade = hoje.year - nascimento.year;
     List<String> meses = ["Janeiro", "Fevereiro", "Março", "Abril", 
     "Maio", "Junho", "Julho", "Agosto", 
@@ -62,10 +80,11 @@ class _BirthdayPageState extends State<BirthdayPage>{
     setState(() {
       _resultado = "Idade: $idade anos\n Mês de nascimento: $mesNome\nDia da Semana em que nasceu: $diaNascimento\n Dias para proximo aniversario: $diasParaProximoAniversario ";
 
-    });
-  }
+    });}}
+  }}
   @override
   Widget build(BuildContext context) {
+   
     // TODO: implement build
     return Scaffold(
         
@@ -77,8 +96,12 @@ class _BirthdayPageState extends State<BirthdayPage>{
           ElevatedButton(onPressed: (){
             _calcular(_dateControler.text);
           }, 
+          
           child:Text("Pressione") ),
-          Text(_resultado)
+          
+            Text(_resultado)
+         
+          
           ],
         )
 
